@@ -12,8 +12,8 @@ describe AnyStyle::Format::RIS do
   it 'formats a book reference in RIS format' do
     data = [{
       type: 'book',
-      author: [{ family: 'Lingard', given: 'Zac' }],
-      issued: '2023',
+      author: [{ family: 'Doe', given: 'John' }],
+      date: '2023',
       title: 'The Great Emu War',
       publisher: 'Wiley',
       ISBN: '9780245839459',
@@ -24,8 +24,10 @@ describe AnyStyle::Format::RIS do
 
     output = format_ris(data)
     expect(output).to include("TY  - BOOK")
-    expect(output).to include("AU  - Lingard, Zac")
+    expect(output).to include("AU  - Doe, John")
     expect(output).to include("TI  - The Great Emu War")
+    expect(output).to include("PY  - 2023")
+    expect(output).to include("SN  - 9780245839459")
     expect(output).to include("ER  -")
   end
 end

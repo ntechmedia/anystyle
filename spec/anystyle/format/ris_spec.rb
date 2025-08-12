@@ -30,4 +30,35 @@ describe AnyStyle::Format::RIS do
     expect(output).to include("SN  - 9780245839459")
     expect(output).to include("ER  -")
   end
+
+  it 'formats a book reference with a date in RIS format' do
+    data = [{
+      type: 'book',
+      author: [{ family: 'Lipson', given: 'Charles' }],
+      date: '15/5/2011',
+      title: 'Cite Right: A Quick Guide to Citation Styles',
+      publisher: 'University of Chicago Press',
+      ISBN: '9780226484648',
+      edition: '1',
+    }]
+
+    output = format_ris(data)
+    expect(output).to include("PY  - 15/5/2011")
+  end
+
+  it 'formats a journal article reference with a date in RIS format' do
+    data = [{
+      type: 'article',
+      author: [{ family: 'Keller', given: 'Maria Eugenia' }],
+      date: '15-05-2011',
+      title: 'Experts perspectives on shared responsibility for speed management: A thematic analysis informed by systems thinking',
+      containertitle: 'Accident Analysis & Prevention',
+      ISSN: '0001-4575',
+      volume: '211',
+    }]
+  
+    output = format_ris(data)
+    expect(output).to include("PY  - 15-05-2011")
+
+  end
 end

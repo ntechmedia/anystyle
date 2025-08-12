@@ -12,7 +12,7 @@ module AnyStyle
         lines << "TY  - #{type}"
 
         add_authors(lines, entry[:author])
-        lines << "PY  - #{unwrap(entry[:issued])}" if entry[:issued]
+        lines << "PY  - #{unwrap(entry[:issued] || entry[:date])}" if entry[:issued] || entry[:date]
         lines << "TI  - #{unwrap(entry[:title])}" if entry[:title]
         lines << "T2  - #{unwrap(entry[:'container-title'])}" if entry[:'container-title']
         lines << "PB  - #{unwrap(entry[:publisher])}" if entry[:publisher]

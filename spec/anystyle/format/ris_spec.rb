@@ -45,7 +45,7 @@ module AnyStyle
       }]
 
       output = format_ris(data)
-      expect(output).to include("PY  - 15/5/2011")
+      expect(output).to include("DA  - 2011/5/15/")
     end
 
     it 'formats a journal article reference with a date in RIS format' do
@@ -60,7 +60,7 @@ module AnyStyle
       }]
     
       output = format_ris(data)
-      expect(output).to include("PY  - 15-05-2011")
+      expect(output).to include("DA  - 2011/5/15/")
 
     end
 
@@ -72,8 +72,8 @@ module AnyStyle
     it 'Parse correctly formats a date in RIS format' do
       output = ap.parse(refs, format: 'ris', date_format: 'citeproc')
 
-      expect(output).to include("PY  - 02/08/1995")
-
+      expect(output).to include("PY  - 1967///")
+      expect(output).to include("DA  - 1995/8/2/")
     end
   end
 end

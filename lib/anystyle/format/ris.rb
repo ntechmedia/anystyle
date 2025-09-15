@@ -11,8 +11,12 @@ module AnyStyle
         type = ris_type(entry[:type])
         lines << "TY  - #{type}"
 
+        if (date = ris_py_value(entry))
+          lines << date
+        end
+
         add_authors(lines, entry[:author])
-        lines << "PY  - #{unwrap(entry[:issued] || entry[:date])}" if entry[:issued] || entry[:date]
+        # lines << "PY  - #{unwrap(entry[:issued] || entry[:date])}" if entry[:issued] || entry[:date]
         lines << "TI  - #{unwrap(entry[:title])}" if entry[:title]
         lines << "T2  - #{unwrap(entry[:'container-title'])}" if entry[:'container-title']
         lines << "PB  - #{unwrap(entry[:publisher])}" if entry[:publisher]
@@ -72,6 +76,68 @@ module AnyStyle
 
           lines << "AU  - #{name}" if name
         end
+      end
+
+      # Build the PY value from :issued (CiteProc) or raw :date/:issued string
+      # def py_from_entry(entry)
+        # 1) Prefer structured CiteProc (:issued) if present
+        # issued = entry[:issued]
+        # if issued.is_a?(Hash)
+
+        #   raw = issued[:raw]
+        #   return ris_py_value(raw) if raw
+        # end
+
+        # 2) Otherwise, fall back to raw date strings
+      #   raw = unwrap(entry[:date])# || unwrap(entry[:issued])
+
+      #   ris_py_value(raw)
+      # end
+
+      # Emit "YYYY/MM/DD/", leaving missing parts empty. Year is mandatory.
+      def format_py(year, month = nil, day = nil)
+        return nil unless year
+        year_i = year.to_i
+        month_s = month.nil? || month.to_s.strip.empty? ? "" : month.to_i.to_s
+        day_s = day.nil? || day.to_s.strip.empty? ? "" : day.to_i.to_s
+        "%04d/%s/%s/" % [year_i, month_s, day_s]
+      end
+
+      # Parse loose date strings into "YYYY/MM/DD/". Handles:
+      # - "2024"
+      # - "4/8/1999" or "04-08-1999" (D/M/YYYY as per your requirement)
+      # - "1999-08-04" or "1999/08"
+      # - fuzzy strings with a detectable year ("ca. 2012")
+      def ris_py_value(entry)
+        date_raw = unwrap(entry[:date])
+      
+        return nil if date_raw.nil?
+        date_string = date_raw.to_s.strip
+        return nil if date_string.empty?
+
+        # Year only
+        if date_string =~ /\A\d{4}\z/
+          return "PY  - " + format_py(date_string.to_i)
+        end
+
+        # D/M/YYYY or DD-MM-YYYY (treat as day/month/year per your example)
+        if (matched = date_string.match(/\A(\d{1,2})[\/.-](\d{1,2})[\/.-](\d{4})\z/))
+          day, month, year = matched[1].to_i, matched[2].to_i, matched[3].to_i
+          return "DA  - " + format_py(year, month, day)
+        end
+
+        # YYYY-M-D or YYYY/M or YYYY/M/D
+        if (matched = date_string.match(/\A(\d{4})[\/.-](\d{1,2})(?:[\/.-](\d{1,2}))?\z/))
+          year, month, day = matched[1].to_i, matched[2].to_i, (matched[3] && matched[3].to_i)
+          return "DA  - " + format_py(year, month, day)
+        end
+
+        # Fallback: extract a plausible year
+        if (matched = date_string.match(/\b(1[5-9]\d{2}|20\d{2}|2100)\b/))
+          return "PY  - " + format_py(matched[1].to_i)
+        end
+
+        nil
       end
     end
   end

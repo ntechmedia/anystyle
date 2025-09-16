@@ -16,7 +16,6 @@ module AnyStyle
         end
 
         add_authors(lines, entry[:author])
-        # lines << "PY  - #{unwrap(entry[:issued] || entry[:date])}" if entry[:issued] || entry[:date]
         lines << "TI  - #{unwrap(entry[:title])}" if entry[:title]
         lines << "T2  - #{unwrap(entry[:'container-title'])}" if entry[:'container-title']
         lines << "PB  - #{unwrap(entry[:publisher])}" if entry[:publisher]
@@ -94,7 +93,7 @@ module AnyStyle
         return nil if date_raw.nil?
         date_string = date_raw.to_s.strip
         return nil if date_string.empty?
-        
+
         #Extract year
         if (matched = date_string.match(/\b(1?[0-9]\d{2}|20\d{2})\b/))
           return "PY  - " + format_py(matched[1].to_i)

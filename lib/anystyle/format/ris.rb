@@ -11,8 +11,11 @@ module AnyStyle
         type = ris_type(entry[:type])
         lines << "TY  - #{type}"
 
+        if (date = ris_py_value(entry))
+          lines << date
+        end
+
         add_authors(lines, entry[:author])
-        lines << "PY  - #{unwrap(entry[:issued] || entry[:date])}" if entry[:issued] || entry[:date]
         lines << "TI  - #{unwrap(entry[:title])}" if entry[:title]
         lines << "T2  - #{unwrap(entry[:'container-title'])}" if entry[:'container-title']
         lines << "PB  - #{unwrap(entry[:publisher])}" if entry[:publisher]
@@ -72,6 +75,31 @@ module AnyStyle
 
           lines << "AU  - #{name}" if name
         end
+      end
+
+      # Emit "YYYY/MM/DD/", leaving missing parts empty
+      def format_py(year, month = nil, day = nil)
+        return nil unless year
+        year_i = year.to_i
+        month_s = month.nil? || month.to_s.strip.empty? ? "" : month.to_i.to_s
+        day_s = day.nil? || day.to_s.strip.empty? ? "" : day.to_i.to_s
+        "%04d/%s/%s/" % [year_i, month_s, day_s]
+      end
+
+      # Parse loose date strings into "YYYY/MM/DD/"
+      def ris_py_value(entry)
+        date_raw = unwrap(entry[:date])
+      
+        return nil if date_raw.nil?
+        date_string = date_raw.to_s.strip
+        return nil if date_string.empty?
+
+        #Extract year
+        if (matched = date_string.match(/\b(1?[0-9]\d{2}|20\d{2})\b/))
+          return "PY  - " + format_py(matched[1].to_i)
+        end
+
+        nil
       end
     end
   end

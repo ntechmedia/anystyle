@@ -78,7 +78,7 @@ module AnyStyle
         end
       end
 
-      # Emit "YYYY/MM/DD/", leaving missing parts empty. Year is mandatory.
+      # Emit "YYYY/MM/DD/", leaving missing parts empty
       def format_py(year, month = nil, day = nil)
         return nil unless year
         year_i = year.to_i
@@ -87,32 +87,15 @@ module AnyStyle
         "%04d/%s/%s/" % [year_i, month_s, day_s]
       end
 
-      # Parse loose date strings into "YYYY/MM/DD/". Handles:
+      # Parse loose date strings into "YYYY/MM/DD/"
       def ris_py_value(entry)
         date_raw = unwrap(entry[:date])
       
         return nil if date_raw.nil?
         date_string = date_raw.to_s.strip
         return nil if date_string.empty?
-
-        # Year only
-        if date_string =~ /\A\d{4}\z/
-          return "PY  - " + format_py(date_string.to_i)
-        end
-
-        # D/M/YYYY or DD-MM-YYYY
-        if (matched = date_string.match(/\A(\d{1,2})[\/.-](\d{1,2})[\/.-](\d{4})\z/))
-          day, month, year = matched[1].to_i, matched[2].to_i, matched[3].to_i
-          return "DA  - " + format_py(year, month, day)
-        end
-
-        # YYYY-M-D or YYYY/M or YYYY/M/D
-        if (matched = date_string.match(/\A(\d{4})[\/.-](\d{1,2})(?:[\/.-](\d{1,2}))?\z/))
-          year, month, day = matched[1].to_i, matched[2].to_i, (matched[3] && matched[3].to_i)
-          return "DA  - " + format_py(year, month, day)
-        end
-
-        # Fallback: extract a plausible year
+        
+        #Extract year
         if (matched = date_string.match(/\b(1?[0-9]\d{2}|20\d{2})\b/))
           return "PY  - " + format_py(matched[1].to_i)
         end

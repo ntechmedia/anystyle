@@ -45,7 +45,7 @@ module AnyStyle
       }]
 
       output = format_ris(data)
-      expect(output).to include("DA  - 2011/5/15/")
+      expect(output).to include("PY  - 2011///")
     end
 
     it 'formats a journal article reference with a date in RIS format' do
@@ -60,7 +60,7 @@ module AnyStyle
       }]
     
       output = format_ris(data)
-      expect(output).to include("DA  - 2011/5/15/")
+      expect(output).to include("PY  - 2011///")
 
     end
 
@@ -68,26 +68,15 @@ module AnyStyle
       'Derrida, J. (c.1967). L’écriture et la différence (1 éd.). Paris: Éditions du Seuil.',
       'Perec, Georges. A Void. London: The Harvill Press, 02/08/1995. p.108.',
       'Michael, Corvid. The sink hole. Australia: Wiley, 2023-06-05. p.400.',
-      # Citation dates with extra info
-      'Derrida, J. (Spring 2020). L’écriture et la différence (1 éd.). Paris: Éditions du Seuil.',
-      'Perec, Georges. A Void. London: The Harvill Press, 01/03/1993 13:10:40. p.108.',
-    ]}
+    ]} 
 
     it 'Parse correctly formats a date in RIS format' do
       output = ap.parse(refs, format: 'ris', date_format: 'citeproc')
 
       expect(output).to include("PY  - 1967///")
-      expect(output).to include("DA  - 1995/8/2/")
-      expect(output).to include("DA  - 2023/6/5/")
+      expect(output).to include("PY  - 1995///")
+      expect(output).to include("PY  - 2023///")
     end
-
-    it 'Parse correctly formats a date with extra info in RIS format' do
-      output = ap.parse(refs, format: 'ris', date_format: 'citeproc')
-
-      expect(output).to include("DA  - 2020///Spring")
-      expect(output).to include("DA  - 1993/3/1/13:10:40")
-    end
-
 
   end
 end
